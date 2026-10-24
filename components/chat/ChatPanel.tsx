@@ -8,6 +8,27 @@ import { closeChat, takePendingQuestion, useChatState } from "@/lib/chat";
 
 type Message = { role: "user" | "assistant"; content: string };
 
+// Renders **bold** and bare URLs as React nodes (never as HTML), so answers stay safe to display.
+function RichText({ text }: { text: string }) {
+  return text.split(/(\*\*[^*\n]+\*\*|https?:\/\/[^\s)<>"]+)/g).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (/^https?:\/\//.test(part)) {
+      const url = part.replace(/[.,;:!?]+$/, "");
+      return (
+        <span key={i}>
+          <a href={url} target="_blank" rel="noopener noreferrer" className="underline decoration-border-strong underline-offset-2 hover:decoration-current">
+            {url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+          </a>
+          {part.slice(url.length)}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
 const SUGGESTIONS = [
   "What has Manuel built?",
   "Tell me about KA-ANDAM",
@@ -167,7 +188,9 @@ export function ChatPanel() {
                         m.role === "user" ? "rounded-br-md bg-fg text-bg" : "rounded-bl-md border border-border bg-bg text-fg"
                       }`}
                     >
-                      {m.content || (
+                      {m.content ? (
+                        m.role === "assistant" ? <RichText text={m.content} /> : m.content
+                      ) : (
                         <span className="flex gap-1 py-1" aria-label="Thinking">
                           {[0, 1, 2].map((d) => (
                             <span key={d} className="size-1.5 animate-bounce rounded-full bg-muted" style={{ animationDelay: `${d * 0.15}s` }} />
