@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, ArrowUpRight, Copy, CornerDownLeft, Moon, Search, Volume2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Copy, CornerDownLeft, Moon, Search, Sparkles, Volume2 } from "lucide-react";
+import { openChat } from "@/lib/chat";
 import { nav, profile, projects } from "@/lib/content";
 import { scrollToId } from "@/lib/scroll";
 import { toggleSound } from "@/lib/sound";
@@ -79,7 +80,19 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
     ];
   }, [onOpenChange, toggle]);
 
-  const filtered = items.filter((i) => (i.label + " " + i.group + " " + (i.hint ?? "")).toLowerCase().includes(query.toLowerCase()));
+  const matches = items.filter((i) => (i.label + " " + i.group + " " + (i.hint ?? "")).toLowerCase().includes(query.toLowerCase()));
+  const question = query.trim();
+  const ask: Item = {
+    group: "AI",
+    label: question ? `Ask AI: “${question}”` : "Ask AI about Manuel",
+    icon: <Sparkles className="size-4" />,
+    run: () => {
+      onOpenChange(false);
+      openChat(question);
+    },
+  };
+  // Empty: AI first. Typed text that matches nothing becomes a question; otherwise matches come first.
+  const filtered = !question ? [ask, ...matches] : matches.length ? [...matches, ask] : [ask];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -144,7 +157,7 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
                   setQuery(e.target.value);
                   setActive(0);
                 }}
-                placeholder="Jump to a section, project or action…"
+                placeholder="Jump somewhere, or ask the AI a question…"
                 className="h-12 w-full bg-transparent text-sm text-fg outline-none placeholder:text-muted"
               />
               <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted">ESC</kbd>

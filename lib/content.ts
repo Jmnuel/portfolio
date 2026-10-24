@@ -94,9 +94,9 @@ export const projects: Project[] = [
     name: "KA-ANDAM",
     tagline: "Emergency response team management for DRRM.",
     summary:
-      "An installable admin dashboard that helps Catbalogan City's disaster risk reduction office coordinate rescuers and response teams.",
+      "My BSIT capstone project: an installable admin dashboard that helps Catbalogan City's disaster risk reduction office coordinate rescuers and response teams.",
     problem:
-      "When disasters hit, response offices need one live view of who is available and where teams are deployed. KA-ANDAM gives rescuer administrators a fast, installable dashboard built for the Disaster Risk Reduction & Management office of Catbalogan City.",
+      "When disasters hit, response offices need one live view of who is available and where teams are deployed. KA-ANDAM gives rescuer administrators a fast, installable dashboard built for the Disaster Risk Reduction & Management office of Catbalogan City. It is my ongoing capstone project at Samar State University.",
     features: [
       "Rescuer and response-team management",
       "Secure admin sign-in with role-based access",
@@ -105,7 +105,7 @@ export const projects: Project[] = [
     ],
     stack: ["Next.js", "Supabase", "shadcn/ui", "Tailwind CSS", "PWA"],
     role: "Full-Stack Developer",
-    status: "Live · Admin access",
+    status: "Capstone · In progress",
     url: "https://ka-andam.vercel.app/",
     image: "/projects/ka-andam.webp",
     year: "2026",
@@ -164,6 +164,12 @@ export const projects: Project[] = [
 
 export const experience = [
   {
+    period: "2026 — Now",
+    title: "Capstone Project · KA-ANDAM",
+    org: "Samar State University · BSIT",
+    body: "Building an emergency response team management dashboard for Catbalogan City's disaster risk reduction office.",
+  },
+  {
     period: "2026",
     title: "Project Lead & Full-Stack Developer",
     org: "SyneED",
@@ -179,7 +185,7 @@ export const experience = [
     period: "2025 — Now",
     title: "Full-Stack Web & Mobile Developer",
     org: "Independent & community projects",
-    body: "Shipped KA-ANDAM for disaster response and SiningSumpay for local artists, from Figma to production.",
+    body: "Took SiningSumpay for local artists and SAMAR-AGOS for water service from Figma to production.",
   },
   {
     period: "2025 — Now",
@@ -258,7 +264,7 @@ export const stack: { name: string; icon?: string }[][] = [
 ];
 
 export const stats = [
-  { value: 4, suffix: "", label: "Products shipped" },
+  { value: 4, suffix: "", label: "Products built" },
   { value: 20, suffix: "", label: "Tools in the stack" },
   { value: 2, suffix: "", label: "rSCENE hackathons" },
   { value: 3, suffix: "", label: "Disciplines: AI · Dev · UX" },

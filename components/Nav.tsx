@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Command } from "lucide-react";
+import { Command, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import { openChat } from "@/lib/chat";
 import { nav, profile } from "@/lib/content";
+import { ChatPanel } from "./chat/ChatPanel";
 import { CommandMenu } from "./CommandMenu";
 import { SoundToggle } from "./SoundToggle";
 import { ThemeToggle } from "./ThemeToggle";
@@ -38,6 +40,14 @@ export function Nav({ home = true }: { home?: boolean }) {
           </ul>
           <button
             type="button"
+            onClick={() => openChat()}
+            className="mr-1 flex items-center gap-1.5 rounded-full bg-fg px-3 py-1.5 text-xs font-medium text-bg transition hover:opacity-90"
+          >
+            <Sparkles className="size-3.5" />
+            Ask AI
+          </button>
+          <button
+            type="button"
             onClick={() => setOpen(true)}
             aria-label="Open command menu"
             className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 font-mono text-xs text-muted transition hover:border-border-strong hover:text-fg"
@@ -49,6 +59,7 @@ export function Nav({ home = true }: { home?: boolean }) {
         </nav>
       </motion.header>
       <CommandMenu open={open} onOpenChange={setOpen} />
+      <ChatPanel />
     </>
   );
 }

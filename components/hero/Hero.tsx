@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowDown, ArrowRight, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, MapPin, Sparkles } from "lucide-react";
+import { openChat } from "@/lib/chat";
 import { profile } from "@/lib/content";
 import { HyperText } from "@/components/ui/HyperText";
 import { Spotlight } from "@/components/ui/Spotlight";
@@ -69,7 +70,10 @@ export function Hero() {
 
           <motion.p {...item(0.65)} className="mt-6 flex flex-wrap items-center gap-1.5 font-mono text-xs text-muted">
             <MapPin className="size-3.5" /> {profile.location} · Press{" "}
-            <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">Ctrl/⌘ K</kbd> to navigate
+            <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">Ctrl/⌘ K</kbd> to navigate, or{" "}
+            <button type="button" onClick={() => openChat()} className="inline-flex items-center gap-1 text-fg underline decoration-border-strong underline-offset-4 transition hover:decoration-fg">
+              <Sparkles className="size-3" /> ask my AI assistant
+            </button>
           </motion.p>
         </div>
       </div>
