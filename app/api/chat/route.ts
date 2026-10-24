@@ -4,7 +4,7 @@ import { CHAT_SYSTEM_PROMPT } from "@/lib/chatPrompt";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const MODEL = "claude-opus-5-5";
+const MODEL = "claude-haiku-5-5";
 const MAX_MESSAGES = 12; // most recent turns sent to the model
 const MAX_CHARS = 800; // per visitor message
 const RATE_LIMIT = 15; // messages per visitor per window
@@ -21,10 +21,10 @@ function rateLimited(ip: string) {
   return recent.length > RATE_LIMIT;
 }
 
-function parseMessages(body: unknown): Anthropic.Beta.BetaMessageParam[] | null {
+function parseMessages(body: unknown): Anthropic.MessageParam[] | null {
   const raw = (body as { messages?: unknown })?.messages;
   if (!Array.isArray(raw) || raw.length === 0) return null;
-  const messages: Anthropic.Beta.BetaMessageParam[] = [];
+  const messages: Anthropic.MessageParam[] = [];
   for (const m of raw.slice(-MAX_MESSAGES)) {
     const role = (m as { role?: unknown })?.role;
     const content = (m as { content?: unknown })?.content;
@@ -47,22 +47,20 @@ export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (rateLimited(ip)) return json(429, "rate_limited");
 
-  let messages: Anthropic.Beta.BetaMessageParam[] | null = null;
+  let messages: Anthropic.MessageParam[] | null = null;
   try {
     messages = parseMessages(await req.json());
   } catch {}
   if (!messages) return json(400, "bad_request");
 
   const client = new Anthropic();
-  const stream = client.beta.messages.stream(
+  const stream = client.messages.stream(
     {
       model: MODEL,
-      // Answers are a few sentences; the cap also bounds cost per message.
+      // Answers are a few sentences; the cap leaves room for thinking and bounds cost per message.
       max_tokens: 2048,
+      // Haiku 5.5 thinks adaptively by default; low effort keeps chat replies quick.
       output_config: { effort: "low" },
-      // Re-runs the request on Anthropic's recommended model if a safety classifier declines it.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system: [{ type: "text", text: CHAT_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
       messages,
     },
