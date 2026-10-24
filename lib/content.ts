@@ -143,7 +143,7 @@ export const projects: Project[] = [
     summary:
       "An Android marketplace where collectors discover original art from local artists, preview it in their room, and pay safely.",
     problem:
-      "Local artists in Samar have few safe channels to sell, and buyers hesitate to pay before seeing a piece. SiningSumpay holds payment until the artwork arrives, lets collectors preview work at real size in their room, and gives artists commissions and payouts in one app.",
+      "Local artists in Samar have few safe channels to sell, and buyers hesitate to pay before seeing a piece. SiningSumpay holds payment until the artwork arrives, lets collectors preview work at real size in their room, and gives artists commissions and payouts in one app. It began as a Team Los Codigos prototype at the rSCENE 2025 Hackathon; the full system was built in 2026.",
     features: [
       "View in Room — real-size camera preview with frames",
       "Personalized feed, search and price filters",
@@ -173,7 +173,7 @@ export const experience = [
     period: "2025 — 2026",
     title: "Hackathon Developer · Team Los Codigos",
     org: "rSCENE Hackathon · Catbalogan City",
-    body: "Competed in two editions of the regional smart-communities hackathon. In 2026 the team built SAMAR-AGOS, smart water monitoring for Catbalogan's water district.",
+    body: "Competed in two editions of the regional smart-communities hackathon: prototyped SiningSumpay, a marketplace for local artists, in 2025, and built SAMAR-AGOS, smart water monitoring for Catbalogan's water district, in 2026.",
   },
   {
     period: "2025 — Now",
@@ -198,6 +198,7 @@ export type Hackathon = {
   host: string;
   team: string;
   project?: string; // must match a project name to link its case study
+  stage?: string; // e.g. "prototype", shown next to the project name
   result: string;
 };
 
@@ -223,6 +224,8 @@ export const hackathons: Hackathon[] = [
     name: "rSCENE Hackathon 2025",
     date: "June 16, 2025",
     theme: "Kauswagan: Harnessing Technology towards Sustainable Development",
+    project: "SiningSumpay",
+    stage: "prototype",
   },
 ];
 

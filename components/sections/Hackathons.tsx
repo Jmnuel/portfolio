@@ -22,7 +22,7 @@ export function Hackathons() {
             ["TEAM", h.team],
             ["WHERE", h.where],
             ["HOST", h.host],
-            ...(h.project ? [["BUILT", h.project]] : []),
+            ...(h.project ? [["BUILT", h.stage ? `${h.project} · ${h.stage}` : h.project]] : []),
           ];
           return (
             <Reveal
