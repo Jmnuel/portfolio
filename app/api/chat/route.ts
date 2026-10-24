@@ -2,15 +2,16 @@ import { ApiError, FinishReason, GoogleGenAI, ThinkingLevel, type Content } from
 import { CHAT_SYSTEM_PROMPT } from "@/lib/chatPrompt";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 // Free-tier Gemini model (Google AI Studio). Free-tier prompts may be used by Google to
 // improve its products, which is fine here: the assistant only sees public portfolio info.
-const MODEL = "gemini-3.8-flash";
+const MODEL = "gemini-3.6-flash";
 const MAX_MESSAGES = 12; // most recent turns sent to the model
 const MAX_CHARS = 800; // per visitor message
 const RATE_LIMIT = 15; // messages per visitor per window
 const RATE_WINDOW_MS = 10 * 60 * 1000;
+const GENERATION_TIMEOUT_MS = 25_000;
 
 // Best-effort, per-instance limiter that keeps one visitor from using up the free daily quota.
 const hits = new Map<string, number[]>();
@@ -58,6 +59,8 @@ export async function POST(req: Request) {
 
   const ai = new GoogleGenAI({ apiKey });
   const encoder = new TextEncoder();
+  // Give up before the platform's function timeout so visitors get a message, not an error page.
+  const timeout = AbortSignal.timeout(GENERATION_TIMEOUT_MS);
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
@@ -69,7 +72,7 @@ export async function POST(req: Request) {
             // Answers are a few sentences; the cap also leaves room for thinking.
             maxOutputTokens: 2048,
             thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-            abortSignal: req.signal,
+            abortSignal: AbortSignal.any([req.signal, timeout]),
           },
         });
         let finish: FinishReason | undefined;
@@ -85,6 +88,7 @@ export async function POST(req: Request) {
       } catch (error) {
         if (req.signal.aborted) return controller.close();
         let note = "Sorry, something went wrong. Please try again in a moment.";
+        if (timeout.aborted) note = "Sorry, the assistant is taking too long right now. Please try again in a moment.";
         if (error instanceof ApiError && error.status === 429) note = "The assistant has reached its free limit for now. Please try again later.";
         else if (error instanceof ApiError && (error.status === 400 || error.status === 403)) note = "The assistant isn't set up correctly yet.";
         console.error("chat error", error instanceof ApiError ? `${error.status} ${error.message}` : error);
