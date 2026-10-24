@@ -8,9 +8,19 @@ import { closeChat, takePendingQuestion, useChatState } from "@/lib/chat";
 
 type Message = { role: "user" | "assistant"; content: string };
 
-// Renders **bold** and bare URLs as React nodes (never as HTML), so answers stay safe to display.
+const linkClass = "underline decoration-border-strong underline-offset-2 hover:decoration-current";
+
+// Renders [label](url), **bold** and bare URLs as React nodes (never as HTML), so answers stay safe to display.
 function RichText({ text }: { text: string }) {
-  return text.split(/(\*\*[^*\n]+\*\*|https?:\/\/[^\s)<>"]+)/g).map((part, i) => {
+  return text.split(/(\[[^\]\n]+\]\(https?:\/\/[^\s)]+\)|\*\*[^*\n]+\*\*|https?:\/\/[^\s)<>"]+)/g).map((part, i) => {
+    const md = part.match(/^\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)$/);
+    if (md) {
+      return (
+        <a key={i} href={md[2]} target="_blank" rel="noopener noreferrer" className={linkClass}>
+          {md[1]}
+        </a>
+      );
+    }
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
       return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
     }
@@ -18,7 +28,7 @@ function RichText({ text }: { text: string }) {
       const url = part.replace(/[.,;:!?]+$/, "");
       return (
         <span key={i}>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="underline decoration-border-strong underline-offset-2 hover:decoration-current">
+          <a href={url} target="_blank" rel="noopener noreferrer" className={linkClass}>
             {url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
           </a>
           {part.slice(url.length)}
