@@ -16,7 +16,7 @@ export const profile = {
   photo: "/me.webp",
   email: "jmanueligdalino@gmail.com", // TODO: confirm public contact email
   links: {
-    github: "", // TODO: add GitHub profile URL (the GitHub link stays hidden while this is empty)
+    github: "https://github.com/Jmnuel", // the GitHub link is hidden when this is empty
     linkedin: "https://www.linkedin.com/in/jmanueligdalino",
   },
 };
