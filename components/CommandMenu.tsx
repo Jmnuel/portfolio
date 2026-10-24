@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, ArrowUpRight, Copy, CornerDownLeft, Moon, Search } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Copy, CornerDownLeft, Moon, Search, Volume2 } from "lucide-react";
 import { nav, profile, projects } from "@/lib/content";
 import { scrollToId } from "@/lib/scroll";
+import { toggleSound } from "@/lib/sound";
 import { useTheme } from "@/lib/useTheme";
 
 type Item = { group: string; label: string; hint?: string; icon: React.ReactNode; run: () => void };
@@ -68,6 +69,12 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
         label: "Toggle theme",
         icon: <Moon className="size-4" />,
         run: toggle,
+      },
+      {
+        group: "Actions",
+        label: "Toggle ambient sound",
+        icon: <Volume2 className="size-4" />,
+        run: toggleSound,
       },
     ];
   }, [onOpenChange, toggle]);

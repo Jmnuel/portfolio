@@ -20,6 +20,15 @@ export const profile = {
   },
 };
 
+// Shown as a Spotify embed; the audio is streamed by Spotify, never hosted here.
+// (The YouTube upload blocks embedded playback, so YouTube is only linked.)
+export const onRepeat = {
+  title: "Shock The World (Melody Version)",
+  artist: "That Boy Franco",
+  spotifyId: "7GxEKUSvYx4veRRdj0WKum",
+  youtubeId: "8Wf5A9QRdKk",
+};
+
 export const education = {
   school: "Samar State University",
   course: "Bachelor of Science in Information Technology",

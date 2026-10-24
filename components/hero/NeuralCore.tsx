@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { getLevels } from "@/lib/sound";
 import { useTheme } from "@/lib/useTheme";
 
 const vertexShader = /* glsl */ `
@@ -10,6 +11,7 @@ const vertexShader = /* glsl */ `
   uniform float uMorph;
   uniform float uSize;
   uniform float uPixelRatio;
+  uniform float uPulse;
   attribute vec3 aTarget;
   attribute float aRandom;
   varying float vAlpha;
@@ -21,10 +23,12 @@ const vertexShader = /* glsl */ `
 
     float wave = sin(p.x * 2.1 + uTime * 0.7) * sin(p.y * 2.4 + uTime * 0.5) * sin(p.z * 1.9 + uTime * 0.6);
     p += normalize(p + 0.0001) * wave * 0.16 * (1.0 - t * 0.6);
+    // Audio pulse: outer particles kick outward more than inner ones.
+    p += normalize(p + 0.0001) * uPulse * 0.28 * (0.3 + aRandom);
 
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
-    gl_PointSize = uSize * uPixelRatio * (0.5 + aRandom) / -mv.z;
+    gl_PointSize = uSize * uPixelRatio * (0.5 + aRandom) * (1.0 + uPulse * 0.7) / -mv.z;
 
     float depth = smoothstep(9.0, 3.5, -mv.z);
     vAlpha = (0.25 + 0.75 * aRandom) * (0.35 + 0.65 * depth);
@@ -101,6 +105,7 @@ function Core({ count, color }: { count: number; color: string }) {
           uMorph: { value: 0 },
           uSize: { value: 26 },
           uPixelRatio: { value: 1 },
+          uPulse: { value: 0 },
           uColor: { value: new THREE.Color(color) },
         },
       }),
@@ -143,18 +148,22 @@ function Core({ count, color }: { count: number; color: string }) {
 
   useFrame((state, delta) => {
     const u = material.uniforms;
-    u.uTime.value = state.clock.elapsedTime;
+    const { bass, level } = getLevels();
+    // Fast attack, slower release, so each kick reads as a beat.
+    u.uPulse.value = THREE.MathUtils.damp(u.uPulse.value, bass, bass > u.uPulse.value ? 25 : 8, delta);
+    u.uTime.value += delta * (1 + level * 2.5);
     u.uMorph.value = THREE.MathUtils.damp(u.uMorph.value, scroll.current, 4, delta);
     if (!group.current) return;
     const g = group.current;
-    g.rotation.y += delta * 0.08;
+    g.rotation.y += delta * (0.08 + level * 0.25);
+    g.scale.setScalar(1 + u.uPulse.value * 0.05);
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, pointer.current.y * 0.35 + u.uMorph.value * 0.9, 3, delta);
     g.rotation.z = THREE.MathUtils.damp(g.rotation.z, -pointer.current.x * 0.25, 3, delta);
     g.position.x = THREE.MathUtils.damp(g.position.x, pointer.current.x * 0.15, 3, delta);
     if (inner.current) {
       inner.current.rotation.x += delta * 0.2;
       inner.current.rotation.y -= delta * 0.15;
-      inner.current.scale.setScalar(1 - u.uMorph.value * 0.6);
+      inner.current.scale.setScalar((1 - u.uMorph.value * 0.6) * (1 + u.uPulse.value * 0.35));
     }
   });
 

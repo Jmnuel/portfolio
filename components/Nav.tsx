@@ -6,6 +6,7 @@ import { Command } from "lucide-react";
 import { motion } from "motion/react";
 import { nav, profile } from "@/lib/content";
 import { CommandMenu } from "./CommandMenu";
+import { SoundToggle } from "./SoundToggle";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Nav({ home = true }: { home?: boolean }) {
@@ -43,6 +44,7 @@ export function Nav({ home = true }: { home?: boolean }) {
           >
             <Command className="size-3.5" />K
           </button>
+          <SoundToggle />
           <ThemeToggle />
         </nav>
       </motion.header>

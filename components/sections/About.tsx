@@ -2,6 +2,7 @@ import Image from "next/image";
 import { education, focus, profile } from "@/lib/content";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { OnRepeat } from "./OnRepeat";
 
 export function About() {
   return (
@@ -68,6 +69,10 @@ export function About() {
           </Reveal>
         ))}
       </div>
+
+      <Reveal className="mt-6">
+        <OnRepeat />
+      </Reveal>
     </section>
   );
 }
