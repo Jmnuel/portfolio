@@ -21,7 +21,11 @@ function RichText({ text }: { text: string }) {
       );
     }
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
-      return <strong key={i} className="font-semibold text-fg">{part.slice(2, -2)}</strong>;
+      return (
+        <strong key={i} className="font-semibold text-fg">
+          <RichText text={part.slice(2, -2)} />
+        </strong>
+      );
     }
     if (/^https?:\/\//.test(part)) {
       const url = part.replace(/[.,;:!?]+$/, "");
