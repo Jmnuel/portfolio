@@ -1,5 +1,4 @@
 // Every piece of copy, link and project on the site lives here.
-// Search for "TODO" to find details that still need confirming.
 
 // Update if a custom domain is added; sitemap, robots, canonical URLs and JSON-LD all use it.
 export const siteUrl = "https://jmanueligdalino.vercel.app";
@@ -14,7 +13,7 @@ export const profile = {
   headline: "I build AI-powered web and mobile products for real communities.",
   bio: "BS Information Technology student at Samar State University. I design, build and ship full-stack apps — from classroom platforms to disaster-response dashboards — and I lean on AI tooling to move from idea to production fast.",
   photo: "/me.webp",
-  email: "jmanueligdalino@gmail.com", // TODO: confirm public contact email
+  email: "jmanueligdalino@gmail.com",
   links: {
     github: "https://github.com/Jmnuel", // the GitHub link is hidden when this is empty
     linkedin: "https://www.linkedin.com/in/jmanueligdalino",
@@ -105,7 +104,7 @@ export const projects: Project[] = [
       "Dark, low-glare interface for long shifts",
     ],
     stack: ["Next.js", "Supabase", "shadcn/ui", "Tailwind CSS", "PWA"],
-    role: "Full-Stack Developer", // TODO: confirm role
+    role: "Full-Stack Developer",
     status: "Live · Admin access",
     url: "https://ka-andam.vercel.app/",
     image: "/projects/ka-andam.webp",
@@ -129,8 +128,8 @@ export const projects: Project[] = [
       "Demo scenarios: dry season, pump failure, pipeline leak",
     ],
     stack: ["JavaScript", "Firebase", "Firestore", "Leaflet", "Open-Meteo"],
-    role: "Developer · Team Los Codigos", // TODO: confirm role
-    team: ["Team Los Codigos"],
+    role: "Full-Stack Developer",
+    team: ["Team Los Codigos · rSCENE 2026 Hackathon"],
     status: "Live · Hackathon build",
     url: "https://samar-agos-ic9sb.web.app/",
     image: "/projects/samar-agos.webp",
@@ -154,7 +153,7 @@ export const projects: Project[] = [
       "Verified artist badges, stories and QR artist cards",
     ],
     stack: ["Next.js", "Supabase", "React Native", "Android"],
-    role: "Full-Stack Developer", // TODO: confirm role
+    role: "Full-Stack Developer",
     status: "Android · APK available",
     url: "https://siningsumpay-web.vercel.app/",
     image: "/projects/siningsumpay.webp",
@@ -171,10 +170,10 @@ export const experience = [
     body: "Leading a four-person team building a connected-classroom platform on Next.js and Supabase.",
   },
   {
-    period: "2026",
-    title: "Hackathon Developer",
-    org: "rSCENE Hackathon · Catbalogan City", // TODO: confirm year, team and placement
-    body: "Built SAMAR-AGOS with Team Los Codigos — smart water monitoring for Catbalogan's water district.",
+    period: "2025 — 2026",
+    title: "Hackathon Developer · Team Los Codigos",
+    org: "rSCENE Hackathon · Catbalogan City",
+    body: "Competed in two editions of the regional smart-communities hackathon. In 2026 the team built SAMAR-AGOS, smart water monitoring for Catbalogan's water district.",
   },
   {
     period: "2025 — Now",
@@ -190,14 +189,40 @@ export const experience = [
   },
 ];
 
-export const hackathons = [
+export type Hackathon = {
+  name: string;
+  full: string;
+  date: string;
+  theme: string;
+  where: string;
+  host: string;
+  team: string;
+  project?: string; // must match a project name to link its case study
+  result: string;
+};
+
+const rscene = {
+  name: "rSCENE Hackathon",
+  full: "Regional Smart Communities Exposition & Networking Engagement",
+  where: "Catbalogan City, Samar",
+  host: "DOST Region VIII · City Government of Catbalogan",
+  team: "Los Codigos",
+  result: "Participant",
+};
+
+export const hackathons: Hackathon[] = [
   {
-    name: "rSCENE Hackathon",
-    full: "Regional Smart Communities Exposition & Networking Engagement",
-    where: "Catbalogan City, Samar",
-    host: "DOST Region VIII · City Government of Catbalogan",
+    ...rscene,
+    name: "rSCENE Hackathon 2026",
+    date: "October 6, 2026",
+    theme: "The Living Tapestry — Weaving the Threads of Innovation and Heritage",
     project: "SAMAR-AGOS",
-    result: "Participant", // TODO: add placement or award, if any
+  },
+  {
+    ...rscene,
+    name: "rSCENE Hackathon 2025",
+    date: "June 16, 2025",
+    theme: "Kauswagan: Harnessing Technology towards Sustainable Development",
   },
 ];
 
@@ -232,7 +257,7 @@ export const stack: { name: string; icon?: string }[][] = [
 export const stats = [
   { value: 4, suffix: "", label: "Products shipped" },
   { value: 20, suffix: "", label: "Tools in the stack" },
-  { value: 1, suffix: "", label: "Regional hackathon" },
+  { value: 2, suffix: "", label: "rSCENE hackathons" },
   { value: 3, suffix: "", label: "Disciplines: AI · Dev · UX" },
 ];
 
