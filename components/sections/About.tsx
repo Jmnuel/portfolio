@@ -2,8 +2,6 @@ import Image from "next/image";
 import { education, focus, profile } from "@/lib/content";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { OnRepeat } from "./OnRepeat";
-
 export function About() {
   return (
     <section id="about" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32">
@@ -69,10 +67,6 @@ export function About() {
           </Reveal>
         ))}
       </div>
-
-      <Reveal className="mt-6">
-        <OnRepeat />
-      </Reveal>
     </section>
   );
 }

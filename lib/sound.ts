@@ -37,7 +37,6 @@ let playing = false;
 let timer: ReturnType<typeof setInterval> | undefined;
 let nextBeat = 0;
 let beat = 0;
-let kicks: number[] = []; // scheduled kick times, for the visual pulse
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -148,8 +147,6 @@ function playKick(g: Graph, bus: GainNode, t: number) {
   osc.connect(gain).connect(bus);
   osc.start(t);
   osc.stop(t + 0.5);
-  kicks = kicks.filter((k) => k > t - 1);
-  kicks.push(t);
 }
 
 function playHat(g: Graph, bus: GainNode, t: number) {
@@ -254,7 +251,6 @@ export function stopSound() {
     if (!playing) g.ctx.suspend();
   }, 900);
   session = null;
-  kicks = [];
   savePreference(false);
   emit();
 }
@@ -273,25 +269,14 @@ export function subscribeSound(listener: () => void) {
   return () => listeners.delete(listener);
 }
 
-// Kick envelope (bass) and output loudness (level), both 0..1, read every frame by the 3D core.
-// The kick comes from the scheduled hit times rather than the spectrum, where the sustained
-// bass note masks it, so the pulse lands exactly on the beat.
-export function getLevels() {
-  if (!graph || (!playing && graph.master.gain.value < 0.001)) return { bass: 0, level: 0 };
-  const { ctx, analyser, wave, master } = graph;
-  // currentTime can advance in coarse chunks; the output timestamp gives what is audible now.
-  const ts = ctx.getOutputTimestamp?.();
-  const now =
-    ts?.contextTime !== undefined && ts.performanceTime !== undefined && ts.performanceTime > 0
-      ? ts.contextTime + (performance.now() - ts.performanceTime) / 1000
-      : ctx.currentTime;
-  let bass = 0;
-  for (const k of kicks) if (k <= now) bass = Math.max(bass, Math.exp(-(now - k) * 7));
+// Output loudness (RMS) in 0..1, read every frame by the 3D core to set its drift speed.
+export function getLevel() {
+  if (!graph || (!playing && graph.master.gain.value < 0.001)) return 0;
+  const { analyser, wave } = graph;
   analyser.getFloatTimeDomainData(wave);
   let sum = 0;
   for (let i = 0; i < wave.length; i++) sum += wave[i] * wave[i];
-  const level = Math.min(1, Math.sqrt(sum / wave.length) / 0.2);
-  return { bass: bass * Math.min(1, master.gain.value / VOLUME), level };
+  return Math.min(1, Math.sqrt(sum / wave.length) / 0.2);
 }
 
 function savePreference(on: boolean) {
