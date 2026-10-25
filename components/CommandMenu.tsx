@@ -41,6 +41,16 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
       })),
       {
         group: "Actions",
+        label: "Digital business card",
+        hint: "QR code · save contact",
+        icon: <ArrowUpRight className="size-4" />,
+        run: () => {
+          close();
+          window.location.href = "/card";
+        },
+      },
+      {
+        group: "Actions",
         label: "Copy email",
         hint: profile.email,
         icon: <Copy className="size-4" />,
