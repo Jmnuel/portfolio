@@ -32,7 +32,7 @@ export async function NotesIndex({ lang }: { lang: Lang }) {
   return (
     <>
       <Nav home={false} />
-      <main className="mx-auto min-h-dvh max-w-4xl px-4 pb-24 pt-32 sm:px-6">
+      <main id="main" className="mx-auto min-h-dvh max-w-4xl px-4 pb-24 pt-32 sm:px-6">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">{t.eyebrow}</p>
         </Reveal>
@@ -86,7 +86,7 @@ export async function NotePage({ lang, slug }: { lang: Lang; slug: string }) {
   return (
     <>
       <Nav home={false} />
-      <main className="mx-auto min-h-dvh max-w-3xl px-4 pb-24 pt-32 sm:px-6">
+      <main id="main" className="mx-auto min-h-dvh max-w-3xl px-4 pb-24 pt-32 sm:px-6">
         <Link href={localePath(lang, "/notes")} className="inline-flex items-center gap-1.5 font-mono text-xs text-muted transition hover:text-fg">
           <ArrowLeft className="size-3.5" /> {t.back}
         </Link>

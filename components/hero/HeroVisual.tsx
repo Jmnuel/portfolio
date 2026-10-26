@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { StaticCore } from "./StaticCore";
 
 const NeuralCore = dynamic(() => import("./NeuralCore"), { ssr: false });
@@ -16,24 +16,49 @@ function canUseWebGL() {
   }
 }
 
+// The light SVG core paints immediately; the 3D core (three.js) only loads once the page has
+// finished loading and the browser is idle, then crossfades in. This keeps the heavy library
+// out of the critical start-up path on slow phones.
 export function HeroVisual() {
-  const [mode, setMode] = useState<"pending" | "3d" | "static">("pending");
+  const [show3d, setShow3d] = useState(false);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setMode(!reduced && canUseWebGL() ? "3d" : "static");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !canUseWebGL()) return;
+    let idle = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const go = () => setShow3d(true);
+    const start = () => {
+      if ("requestIdleCallback" in window) idle = window.requestIdleCallback(go, { timeout: 2500 });
+      else timer = setTimeout(go, 1200);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      if (idle) window.cancelIdleCallback(idle);
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
-    <motion.div
-      aria-hidden
-      className="pointer-events-none absolute inset-0"
-      initial={{ opacity: 0, scale: 0.92 }}
-      animate={{ opacity: mode === "pending" ? 0 : 1, scale: 1 }}
-      transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {mode === "3d" && <NeuralCore />}
-      {mode === "static" && <StaticCore />}
-    </motion.div>
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      <AnimatePresence>
+        {!show3d && (
+          <motion.div key="static" className="absolute inset-0" exit={{ opacity: 0 }} transition={{ duration: 1.2 }}>
+            <StaticCore />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {show3d && (
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 0.94 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <NeuralCore />
+        </motion.div>
+      )}
+    </div>
   );
 }

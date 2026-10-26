@@ -19,7 +19,7 @@ export function UsesPage({ lang }: { lang: Lang }) {
   return (
     <>
       <Nav home={false} />
-      <main className="mx-auto min-h-dvh max-w-4xl px-4 pb-24 pt-32 sm:px-6">
+      <main id="main" className="mx-auto min-h-dvh max-w-4xl px-4 pb-24 pt-32 sm:px-6">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">{t.eyebrow}</p>
         </Reveal>

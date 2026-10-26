@@ -20,7 +20,8 @@ export function projectMetadata(lang: Lang, slug: string): Metadata {
     title: project.name,
     description,
     alternates: alternates(path, lang),
-    openGraph: { title: project.name, description, url: localePath(lang, path), images: [project.image] },
+    // The share image comes from the route's opengraph-image.tsx.
+    openGraph: { title: project.name, description, url: localePath(lang, path) },
   };
 }
 
@@ -37,7 +38,7 @@ export function ProjectPage({ lang, slug }: { lang: Lang; slug: string }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(projectJsonLd(p))} />
       <Nav home={false} />
-      <main className="mx-auto max-w-5xl px-4 pb-24 pt-32 sm:px-6">
+      <main id="main" className="mx-auto max-w-5xl px-4 pb-24 pt-32 sm:px-6">
         <Link href={localePath(lang, "/#projects")} className="inline-flex items-center gap-1.5 font-mono text-xs text-muted transition hover:text-fg">
           <ArrowLeft className="size-3.5" /> {t.allProjects}
         </Link>

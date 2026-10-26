@@ -46,7 +46,8 @@ export function HyperText({
   }, [run, delay]);
 
   return (
-    <span className={className} onMouseEnter={run} aria-label={text}>
+    <span className={className} onMouseEnter={run}>
+      <span className="sr-only">{text}</span>
       <span aria-hidden>{display}</span>
     </span>
   );

@@ -15,8 +15,15 @@ import { HeroVisual } from "./HeroVisual";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const item = (delay: number) => ({
-  initial: { opacity: 0, y: 20, filter: "blur(6px)" },
-  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, delay: delay + introDelay(), ease },
+});
+// The name and headline are the page's largest text, so they're visible from the first paint
+// (good for load speed) and only slide into place.
+const slide = (delay: number) => ({
+  initial: { y: 20 },
+  animate: { y: 0 },
   transition: { duration: 0.8, delay: delay + introDelay(), ease },
 });
 
@@ -52,7 +59,7 @@ export function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1 {...item(0.2)} className="mt-6 font-semibold leading-[0.95] tracking-tighter">
+          <motion.h1 {...slide(0.2)} className="mt-6 font-semibold leading-[0.95] tracking-tighter">
             <span className="block text-sm font-normal tracking-normal text-muted">{t.hero.hi}</span>
             <HyperText
               text={profile.name.toUpperCase()}
@@ -70,7 +77,7 @@ export function Hero() {
             ))}
           </motion.p>
 
-          <motion.p {...item(0.45)} className="mt-6 max-w-xl text-pretty text-lg text-muted md:text-xl">
+          <motion.p {...slide(0.45)} className="mt-6 max-w-xl text-pretty text-lg text-muted md:text-xl">
             {profile.headline}
           </motion.p>
 

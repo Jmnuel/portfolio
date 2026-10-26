@@ -17,7 +17,7 @@ export function HomePage({ lang }: { lang: Lang }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(personJsonLd())} />
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(projectListJsonLd())} />
       <Nav />
-      <main>
+      <main id="main">
         <Hero />
         <Stats lang={lang} />
         <About lang={lang} />

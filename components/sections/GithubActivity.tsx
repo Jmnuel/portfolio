@@ -2,12 +2,37 @@ import { ArrowUpRight, Star } from "lucide-react";
 import { profile } from "@/lib/content";
 import { dict } from "@/lib/dict";
 import type { Lang } from "@/lib/i18n";
-import { getContributions, getFeaturedRepos } from "@/lib/github";
+import { getContributions, getFeaturedRepos, type ContributionDay } from "@/lib/github";
 import { BrandIcon } from "@/components/ui/BrandIcon";
 import { Reveal } from "@/components/ui/Reveal";
 
 // Monochrome contribution levels: empty → strongest.
 const LEVEL = ["bg-fg/[0.06]", "bg-fg/25", "bg-fg/45", "bg-fg/70", "bg-fg"];
+const LEVEL_OPACITY = [0.06, 0.25, 0.45, 0.7, 1];
+const CELL = 11;
+const GAP = 3;
+
+// One SVG with a single <path> per contribution level, instead of hundreds of boxes.
+function ContributionGraph({ weeks, label }: { weeks: ContributionDay[][]; label: string }) {
+  const paths: string[][] = LEVEL_OPACITY.map(() => []);
+  weeks.forEach((week, w) =>
+    week.forEach((day, d) => {
+      if (day.level < 0) return;
+      const x = w * (CELL + GAP);
+      const y = d * (CELL + GAP);
+      paths[day.level].push(`M${x + 2} ${y}h${CELL - 4}q2 0 2 2v${CELL - 4}q0 2 -2 2h${-(CELL - 4)}q-2 0 -2 -2v${-(CELL - 4)}q0 -2 2 -2z`);
+    }),
+  );
+  const width = weeks.length * (CELL + GAP) - GAP;
+  const height = 7 * (CELL + GAP) - GAP;
+  return (
+    <div dir="ltr" className="w-max">
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} className="text-fg">
+        {paths.map((d, level) => d.length > 0 && <path key={level} d={d.join("")} fill="currentColor" opacity={LEVEL_OPACITY[level]} />)}
+      </svg>
+    </div>
+  );
+}
 
 export async function GithubActivity({ lang }: { lang: Lang }) {
   const [contributions, repos] = await Promise.all([getContributions(), getFeaturedRepos()]);
@@ -38,19 +63,7 @@ export async function GithubActivity({ lang }: { lang: Lang }) {
           <>
             {/* dir="rtl" makes a narrow, scrollable graph open on the most recent weeks. */}
             <div className="mt-5 overflow-x-auto pb-1" dir="rtl" data-lenis-prevent>
-              <div className="flex w-max gap-[3px]" dir="ltr" role="img" aria-label={t.contributions(contributions.total)}>
-                {contributions.weeks.map((week, w) => (
-                  <div key={w} className="flex flex-col gap-[3px]">
-                    {week.map((day, d) => (
-                      <span
-                        key={d}
-                        title={day.date || undefined}
-                        className={`size-[11px] rounded-[2px] ${day.level < 0 ? "opacity-0" : LEVEL[day.level]}`}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
+              <ContributionGraph weeks={contributions.weeks} label={t.contributions(contributions.total)} />
             </div>
             <div className="mt-3 flex items-center justify-end gap-1.5 font-mono text-[10px] text-muted">
               {t.less}

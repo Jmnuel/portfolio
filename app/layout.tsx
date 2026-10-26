@@ -57,6 +57,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="noise min-h-dvh">
+        <a
+          href="#main"
+          className="sr-only z-[110] rounded-full bg-fg px-4 py-2 text-sm text-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        >
+          Skip to content
+        </a>
         <LangSync />
         <Intro />
         <Cursor />

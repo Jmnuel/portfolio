@@ -26,7 +26,7 @@ export async function CardPage({ lang }: { lang: Lang }) {
   return (
     <>
       <Nav home={false} />
-      <main className="bg-dots mx-auto min-h-dvh max-w-6xl px-4 pb-24 pt-32 sm:px-6">
+      <main id="main" className="bg-dots mx-auto min-h-dvh max-w-6xl px-4 pb-24 pt-32 sm:px-6">
         <Reveal className="text-center">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">{t.eyebrow}</p>
           <h1 className="text-gradient mt-4 text-4xl font-semibold tracking-tighter md:text-6xl">{t.title}</h1>

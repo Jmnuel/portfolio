@@ -182,7 +182,9 @@ export default function NeuralCore() {
   const { theme } = useTheme();
   const wrapper = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
-  const [count] = useState(() => (typeof window !== "undefined" && window.innerWidth < 768 ? 3500 : 9000));
+  // Phones get fewer particles and a lower pixel ratio to stay smooth on modest GPUs.
+  const [small] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
+  const count = small ? 2600 : 9000;
 
   // Stop rendering once the hero has scrolled out of view.
   useEffect(() => {
@@ -197,7 +199,7 @@ export default function NeuralCore() {
     <div ref={wrapper} className="absolute inset-0">
       <Canvas
         camera={{ position: [0, 0, 6.2], fov: 45 }}
-        dpr={[1, 1.75]}
+        dpr={small ? [1, 1.25] : [1, 1.75]}
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
         frameloop={visible ? "always" : "never"}
       >

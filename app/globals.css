@@ -78,6 +78,13 @@ body {
   overflow-x: hidden;
 }
 
+/* Visible focus for keyboard users, in the site's monochrome style. */
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 ::selection {
   background: var(--fg);
   color: var(--bg);

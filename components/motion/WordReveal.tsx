@@ -20,12 +20,13 @@ export function WordReveal({
   return (
     <motion.span
       className={className}
-      aria-label={text}
       initial="hidden"
       whileInView="shown"
       viewport={{ once: true, margin: "-60px" }}
       transition={{ staggerChildren: 0.06, delayChildren: delay }}
     >
+      {/* Screen readers get the plain sentence; the animated words are hidden from them. */}
+      <span className="sr-only">{text}</span>
       {words.map((word, i) => (
         <span key={i} aria-hidden className="inline-block overflow-hidden pb-[0.12em] align-bottom">
           <motion.span
