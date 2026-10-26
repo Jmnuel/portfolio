@@ -5,7 +5,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=/<>";
 
 // Scrambles letters into place on mount and again on hover.
-export function HyperText({ text, className, duration = 900 }: { text: string; className?: string; duration?: number }) {
+export function HyperText({
+  text,
+  className,
+  duration = 900,
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  duration?: number;
+  delay?: number; // ms before the first scramble
+}) {
   const [display, setDisplay] = useState(text);
   const frame = useRef(0);
 
@@ -28,9 +38,12 @@ export function HyperText({ text, className, duration = 900 }: { text: string; c
   }, [text, duration]);
 
   useEffect(() => {
-    run();
-    return () => cancelAnimationFrame(frame.current);
-  }, [run]);
+    const id = setTimeout(run, delay);
+    return () => {
+      clearTimeout(id);
+      cancelAnimationFrame(frame.current);
+    };
+  }, [run, delay]);
 
   return (
     <span className={className} onMouseEnter={run} aria-label={text}>

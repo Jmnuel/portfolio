@@ -116,7 +116,32 @@ body {
   pointer-events: none;
 }
 
-/* Equalizer bars for the sound toggle and the On repeat card */
+/* Custom cursor replaces the system one on precise pointers; text fields keep the I-beam. */
+.has-cursor,
+.has-cursor * {
+  cursor: none !important;
+}
+.has-cursor input,
+.has-cursor textarea,
+.has-cursor [contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* Light travelling down the contact section's beams */
+.beam-fall {
+  top: -33%;
+  animation: beam-fall linear infinite;
+}
+@keyframes beam-fall {
+  to { transform: translateY(400%); }
+}
+
+/* The intro only plays on a session's first visit (see the inline script in app/layout.tsx). */
+.no-intro [data-intro] {
+  display: none;
+}
+
+/* Equalizer bars for the sound toggle */
 .eq-bar {
   height: 100%;
   transform-origin: bottom;

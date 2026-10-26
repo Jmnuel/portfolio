@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { projects } from "@/lib/content";
 import { BorderBeam } from "@/components/ui/BorderBeam";
+import { TiltCard } from "@/components/motion/TiltCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
@@ -25,14 +26,16 @@ export function Projects() {
               delay={(i % 2) * 0.08}
               className={featured ? "md:col-span-6" : i === 3 ? "md:col-span-6 lg:col-span-2" : "md:col-span-3 lg:col-span-2"}
             >
-              <article
-                className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition hover:border-border-strong ${
+              <TiltCard
+                max={featured ? 2.5 : 5}
+                className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-border-strong ${
                   featured ? "lg:flex-row" : ""
                 }`}
               >
                 {featured && <BorderBeam />}
                 <Link
                   href={`/projects/${p.slug}`}
+                  data-cursor="View"
                   className={`relative block overflow-hidden border-border ${featured ? "aspect-[16/10] lg:aspect-auto lg:w-3/5 lg:border-r" : "aspect-[16/10] border-b"}`}
                 >
                   <Image
@@ -91,7 +94,7 @@ export function Projects() {
                     </a>
                   </div>
                 </div>
-              </article>
+              </TiltCard>
             </Reveal>
           );
         })}
