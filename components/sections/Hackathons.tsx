@@ -1,28 +1,32 @@
 import Link from "next/link";
 import { ArrowRight, Trophy } from "lucide-react";
-import { hackathons, projects } from "@/lib/content";
+import { dict } from "@/lib/dict";
+import { localePath, type Lang } from "@/lib/i18n";
+import { getContent } from "@/lib/localized";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
-export function Hackathons() {
+export function Hackathons({ lang }: { lang: Lang }) {
+  const { hackathons, projects } = getContent(lang);
+  const t = dict[lang];
   return (
     <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 md:py-32">
       <SectionHeader
         index="05"
-        label="hackathons"
-        title="Built under pressure."
-        description="Two editions of rSCENE, Eastern Visayas' regional smart-communities hackathon, with Team Los Codigos."
+        label={t.sections.hackathons.label}
+        title={t.sections.hackathons.title}
+        description={t.sections.hackathons.description}
       />
       <div className="grid gap-6 md:grid-cols-2">
         {hackathons.map((h, i) => {
           const project = projects.find((p) => p.name === h.project);
           const rows = [
-            ["DATE", h.date],
-            ["THEME", h.theme],
-            ["TEAM", h.team],
-            ["WHERE", h.where],
-            ["HOST", h.host],
-            ...(h.project ? [["BUILT", h.stage ? `${h.project} · ${h.stage}` : h.project]] : []),
+            [t.hackathons.date, h.date],
+            [t.hackathons.theme, h.theme],
+            [t.hackathons.team, h.team],
+            [t.hackathons.where, h.where],
+            [t.hackathons.host, h.host],
+            ...(h.project ? [[t.hackathons.built, h.stage ? `${h.project} · ${h.stage}` : h.project]] : []),
           ];
           return (
             <Reveal
@@ -41,14 +45,17 @@ export function Hackathons() {
               <dl className="mt-6 grid gap-3 font-mono text-xs">
                 {rows.map(([k, v]) => (
                   <div key={k} className="flex gap-3">
-                    <dt className="w-16 shrink-0 text-muted">{k}</dt>
+                    <dt className="w-20 shrink-0 text-muted">{k}</dt>
                     <dd className="text-pretty text-fg">{v}</dd>
                   </div>
                 ))}
               </dl>
               {project && (
-                <Link href={`/projects/${project.slug}`} className="group mt-8 inline-flex items-center gap-1.5 self-start text-sm text-fg">
-                  See {project.name} <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+                <Link
+                  href={localePath(lang, `/projects/${project.slug}`)}
+                  className="group mt-8 inline-flex items-center gap-1.5 self-start text-sm text-fg"
+                >
+                  {t.hackathons.see} {project.name} <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
                 </Link>
               )}
             </Reveal>

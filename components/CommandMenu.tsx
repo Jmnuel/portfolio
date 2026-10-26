@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, ArrowUpRight, Copy, CornerDownLeft, Moon, Search, Sparkles, Volume2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Copy, CornerDownLeft, Keyboard, Languages, Moon, Search, Sparkles, Volume2 } from "lucide-react";
 import { openChat } from "@/lib/chat";
-import { nav, profile, projects } from "@/lib/content";
+import { profile } from "@/lib/content";
+import { localePath, switchPath } from "@/lib/i18n";
+import { getContent } from "@/lib/localized";
 import { scrollToId } from "@/lib/scroll";
 import { toggleSound } from "@/lib/sound";
+import { openTyping } from "@/lib/typing";
+import { useLang } from "@/lib/useLang";
 import { useTheme } from "@/lib/useTheme";
 
 type Item = { group: string; label: string; hint?: string; icon: React.ReactNode; run: () => void };
@@ -16,42 +21,43 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toggle } = useTheme();
+  const { lang, t } = useLang();
+  const router = useRouter();
+  const pathname = usePathname() ?? "/";
+  const c = t.command;
 
   const items = useMemo<Item[]>(() => {
     const close = () => onOpenChange(false);
+    const go = (path: string) => () => {
+      close();
+      router.push(localePath(lang, path));
+    };
+    const { nav, projects } = getContent(lang);
+    const onHome = pathname === localePath(lang, "/");
     return [
       ...nav.map((n) => ({
-        group: "Navigate",
+        group: c.groups.navigate,
         label: n.label,
         icon: <ArrowRight className="size-4" />,
         run: () => {
           close();
-          scrollToId(n.id);
+          if (onHome) scrollToId(n.id);
+          else router.push(localePath(lang, `/#${n.id}`));
         },
       })),
       ...projects.map((p) => ({
-        group: "Projects",
+        group: c.groups.projects,
         label: p.name,
         hint: p.category,
         icon: <ArrowUpRight className="size-4" />,
-        run: () => {
-          close();
-          window.location.href = `/projects/${p.slug}`;
-        },
+        run: go(`/projects/${p.slug}`),
       })),
+      { group: c.groups.pages, label: c.notes, icon: <ArrowUpRight className="size-4" />, run: go("/notes") },
+      { group: c.groups.pages, label: c.uses, icon: <ArrowUpRight className="size-4" />, run: go("/uses") },
+      { group: c.groups.pages, label: c.card, hint: c.cardHint, icon: <ArrowUpRight className="size-4" />, run: go("/card") },
       {
-        group: "Actions",
-        label: "Digital business card",
-        hint: "QR code · save contact",
-        icon: <ArrowUpRight className="size-4" />,
-        run: () => {
-          close();
-          window.location.href = "/card";
-        },
-      },
-      {
-        group: "Actions",
-        label: "Copy email",
+        group: c.groups.actions,
+        label: c.copyEmail,
         hint: profile.email,
         icon: <Copy className="size-4" />,
         run: () => {
@@ -60,41 +66,50 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
         },
       },
       {
-        group: "Actions",
-        label: "Open LinkedIn",
+        group: c.groups.actions,
+        label: c.linkedin,
         icon: <ArrowUpRight className="size-4" />,
         run: () => window.open(profile.links.linkedin, "_blank", "noopener"),
       },
       ...(profile.links.github
         ? [
             {
-              group: "Actions",
-              label: "Open GitHub",
+              group: c.groups.actions,
+              label: c.github,
               icon: <ArrowUpRight className="size-4" />,
               run: () => window.open(profile.links.github, "_blank", "noopener"),
             },
           ]
         : []),
       {
-        group: "Actions",
-        label: "Toggle theme",
-        icon: <Moon className="size-4" />,
-        run: toggle,
+        group: c.groups.actions,
+        label: c.language,
+        icon: <Languages className="size-4" />,
+        run: () => {
+          close();
+          router.push(switchPath(pathname, lang === "en" ? "fil" : "en"));
+        },
       },
+      { group: c.groups.actions, label: c.theme, icon: <Moon className="size-4" />, run: toggle },
+      { group: c.groups.actions, label: c.sound, icon: <Volume2 className="size-4" />, run: toggleSound },
       {
-        group: "Actions",
-        label: "Toggle ambient sound",
-        icon: <Volume2 className="size-4" />,
-        run: toggleSound,
+        group: c.groups.actions,
+        label: c.typing,
+        hint: c.typingHint,
+        icon: <Keyboard className="size-4" />,
+        run: () => {
+          close();
+          openTyping();
+        },
       },
     ];
-  }, [onOpenChange, toggle]);
+  }, [onOpenChange, toggle, lang, c, router, pathname]);
 
   const matches = items.filter((i) => (i.label + " " + i.group + " " + (i.hint ?? "")).toLowerCase().includes(query.toLowerCase()));
   const question = query.trim();
   const ask: Item = {
-    group: "AI",
-    label: question ? `Ask AI: “${question}”` : "Ask AI about Manuel",
+    group: c.groups.ai,
+    label: question ? c.askAiQuestion(question) : c.askAi,
     icon: <Sparkles className="size-4" />,
     run: () => {
       onOpenChange(false);
@@ -167,13 +182,13 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
                   setQuery(e.target.value);
                   setActive(0);
                 }}
-                placeholder="Jump somewhere, or ask the AI a question…"
+                placeholder={c.placeholder}
                 className="h-12 w-full bg-transparent text-sm text-fg outline-none placeholder:text-muted"
               />
               <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted">ESC</kbd>
             </div>
             <ul className="max-h-80 overflow-y-auto p-2">
-              {filtered.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">No results.</li>}
+              {filtered.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">{c.noResults}</li>}
               {filtered.map((item, i) => {
                 const header = item.group !== lastGroup ? item.group : null;
                 lastGroup = item.group;

@@ -270,6 +270,60 @@ export const stats = [
   { value: 3, suffix: "", label: "Disciplines: AI · Dev · UX" },
 ];
 
+// "Now" section: what Manuel is focused on at the moment. Update `updated` whenever this changes.
+export const now = {
+  updated: "October 2026",
+  items: [
+    "Building KA-ANDAM, my BSIT capstone project at Samar State University.",
+    "Getting SyneED ready for Android with a four-person team.",
+    "Exploring agentic AI workflows with Claude Code and Codex.",
+    "Looking for internship and freelance opportunities.",
+  ],
+};
+
+// "Uses" page. Each group renders only if it has items.
+export type UsesGroup = { group: string; items: { name: string; note: string; icon?: string }[] };
+export const uses: UsesGroup[] = [
+  {
+    group: "AI tools",
+    items: [
+      { name: "Claude Code", note: "Agentic coding in the terminal, from planning to shipping.", icon: "siClaude" },
+      { name: "Codex", note: "A second AI pair programmer for code generation and review." },
+      { name: "Google Gemini", note: "Powers the AI assistant on this site.", icon: "siGooglegemini" },
+    ],
+  },
+  {
+    group: "Languages & frameworks",
+    items: [
+      { name: "Next.js", note: "Web apps and landing pages, including this portfolio.", icon: "siNextdotjs" },
+      { name: "React Native", note: "Android apps like SyneED and SiningSumpay.", icon: "siReact" },
+      { name: "TypeScript & JavaScript", note: "The language behind most of my projects.", icon: "siTypescript" },
+      { name: "Node.js", note: "APIs and server-side work.", icon: "siNodedotjs" },
+      { name: "Python & C", note: "Scripting, data work and coursework.", icon: "siPython" },
+      { name: "Tailwind CSS & shadcn/ui", note: "Styling and accessible UI building blocks.", icon: "siTailwindcss" },
+      { name: "Three.js", note: "3D on the web, like the hero on this site.", icon: "siThreedotjs" },
+    ],
+  },
+  {
+    group: "Data & backend",
+    items: [
+      { name: "Supabase", note: "Postgres, auth and storage for most of my apps.", icon: "siSupabase" },
+      { name: "Firebase & Firestore", note: "Auth and realtime data for SAMAR-AGOS.", icon: "siFirebase" },
+      { name: "PostgreSQL & MySQL", note: "Relational databases.", icon: "siPostgresql" },
+      { name: "WatermelonDB", note: "Offline-first local database for React Native." },
+    ],
+  },
+  {
+    group: "Design & deploy",
+    items: [
+      { name: "Figma", note: "Wireframes, UI design and prototypes.", icon: "siFigma" },
+      { name: "Vercel", note: "Hosting for Next.js apps, including this site.", icon: "siVercel" },
+      { name: "Netlify", note: "Static sites and quick deploys.", icon: "siNetlify" },
+    ],
+  },
+  // TODO: add a "Hardware" group (laptop, phone, peripherals) and an "Editor & terminal" group.
+];
+
 export const nav = [
   { id: "about", label: "About" },
   { id: "projects", label: "Projects" },

@@ -1,5 +1,7 @@
 import { ArrowUpRight, Mail } from "lucide-react";
 import { profile } from "@/lib/content";
+import { dict } from "@/lib/dict";
+import type { Lang } from "@/lib/i18n";
 import { BrandIcon, LinkedInIcon } from "@/components/ui/BrandIcon";
 import { CopyEmail } from "@/components/ui/CopyEmail";
 import { Reveal } from "@/components/ui/Reveal";
@@ -12,7 +14,8 @@ const links = [
   { label: "GitHub", href: profile.links.github, icon: <BrandIcon name="siGithub" /> },
 ].filter((l) => l.href);
 
-export function Contact() {
+export function Contact({ lang }: { lang: Lang }) {
+  const t = dict[lang].sections.contact;
   return (
     <section id="contact" className="relative isolate scroll-mt-24 overflow-hidden border-t border-border px-4 py-28 sm:px-6 md:py-40">
       <div className="bg-dots absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
@@ -31,14 +34,12 @@ export function Contact() {
 
       <Reveal className="mx-auto max-w-3xl text-center">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
-          <span className="font-pixel text-fg">06</span> — contact
+          <span className="font-pixel text-fg">06</span> — {t.label}
         </p>
         <h2 className="mt-6 text-5xl font-semibold tracking-tighter text-balance md:text-7xl">
-          <WordReveal text="Let's build something." wordClassName="text-gradient" delay={0.15} />
+          <WordReveal text={t.title} wordClassName="text-gradient" delay={0.15} />
         </h2>
-        <p className="mx-auto mt-6 max-w-xl text-pretty text-muted md:text-lg">
-          Open to internships, freelance work and hackathon teams. Send a message — I usually reply within a day.
-        </p>
+        <p className="mx-auto mt-6 max-w-xl text-pretty text-muted md:text-lg">{t.body}</p>
         <div className="mt-10 flex justify-center">
           <Magnetic strength={0.25}>
             <CopyEmail />

@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { isPlaying, startSound, subscribeSound, toggleSound, wantsSound } from "@/lib/sound";
+import { useLang } from "@/lib/useLang";
 
 export function useSound() {
   return useSyncExternalStore(subscribeSound, isPlaying, () => false);
@@ -9,6 +10,7 @@ export function useSound() {
 
 export function SoundToggle() {
   const playing = useSound();
+  const { t } = useLang();
 
   // Browsers block audio until the visitor interacts, so a saved "on" preference
   // resumes on the first click or key press anywhere except this button.
@@ -34,8 +36,8 @@ export function SoundToggle() {
       data-sound-toggle
       onClick={toggleSound}
       aria-pressed={playing}
-      aria-label={playing ? "Turn sound off" : "Turn sound on"}
-      title={playing ? "Sound on" : "Sound off"}
+      aria-label={playing ? t.sound.off : t.sound.on}
+      title={playing ? t.sound.off : t.sound.on}
       className="grid size-9 place-items-center rounded-full text-muted transition hover:bg-surface-2 hover:text-fg aria-pressed:text-fg"
     >
       <span className="flex h-3.5 items-end gap-[2px]" aria-hidden>

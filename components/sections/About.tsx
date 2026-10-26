@@ -1,11 +1,16 @@
 import Image from "next/image";
-import { education, focus, profile } from "@/lib/content";
+import { dict } from "@/lib/dict";
+import type { Lang } from "@/lib/i18n";
+import { getContent } from "@/lib/localized";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-export function About() {
+
+export function About({ lang }: { lang: Lang }) {
+  const { profile, education, focus, now } = getContent(lang);
+  const t = dict[lang];
   return (
     <section id="about" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32">
-      <SectionHeader index="01" label="about" title="Builder from Samar, shipping for real people." />
+      <SectionHeader index="01" label={t.sections.about.label} title={t.sections.about.title} />
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Terminal-style intro card */}
@@ -45,7 +50,7 @@ export function About() {
           <div className="halftone relative aspect-square w-full lg:aspect-auto lg:h-full">
             <Image
               src={profile.photo}
-              alt={`Portrait of ${profile.name}`}
+              alt={`${t.about.portrait} ${profile.name}`}
               fill
               sizes="(min-width: 1024px) 400px, 100vw"
               className="object-cover object-top grayscale contrast-125"
@@ -67,6 +72,33 @@ export function About() {
           </Reveal>
         ))}
       </div>
+
+      {/* Now: what Manuel is focused on at the moment */}
+      <Reveal className="mt-6">
+        <div className="bg-dots grid gap-6 rounded-2xl border border-border bg-surface p-6 md:grid-cols-[220px_1fr] md:p-8">
+          <div>
+            <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-muted">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-fg/60" />
+                <span className="relative inline-flex size-2 rounded-full bg-fg" />
+              </span>
+              {t.now.label}
+            </p>
+            <h3 className="mt-3 text-xl font-medium text-fg">{t.now.title}</h3>
+            <p className="mt-1 font-mono text-xs text-muted">
+              {t.now.updated} {now.updated}
+            </p>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {now.items.map((item, i) => (
+              <li key={item} className="flex gap-3 text-pretty text-sm text-fg/90">
+                <span className="font-pixel text-xs text-muted">{String(i + 1).padStart(2, "0")}</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Reveal>
     </section>
   );
 }

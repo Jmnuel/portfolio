@@ -1,12 +1,16 @@
-import { experience } from "@/lib/content";
+import { dict } from "@/lib/dict";
+import type { Lang } from "@/lib/i18n";
+import { getContent } from "@/lib/localized";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ScrollLine } from "@/components/motion/ScrollLine";
 
-export function Experience() {
+export function Experience({ lang }: { lang: Lang }) {
+  const { experience } = getContent(lang);
+  const t = dict[lang];
   return (
     <section id="experience" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32">
-      <SectionHeader index="03" label="experience" title="What I've been building." />
+      <SectionHeader index="03" label={t.sections.experience.label} title={t.sections.experience.title} />
 
       <div className="relative md:ml-40">
         <ScrollLine className="left-0" />

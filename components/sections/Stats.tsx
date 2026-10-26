@@ -1,8 +1,10 @@
-import { stats } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
+import { getContent } from "@/lib/localized";
 import { NumberTicker } from "@/components/ui/NumberTicker";
 import { Reveal } from "@/components/ui/Reveal";
 
-export function Stats() {
+export function Stats({ lang }: { lang: Lang }) {
+  const { stats } = getContent(lang);
   return (
     <section className="border-y border-border">
       <div className="mx-auto grid max-w-6xl grid-cols-2 md:grid-cols-4">

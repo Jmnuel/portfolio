@@ -1,20 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { projects } from "@/lib/content";
+import { dict } from "@/lib/dict";
+import { localePath, type Lang } from "@/lib/i18n";
+import { getContent } from "@/lib/localized";
 import { BorderBeam } from "@/components/ui/BorderBeam";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
-export function Projects() {
+export function Projects({ lang }: { lang: Lang }) {
+  const { projects } = getContent(lang);
+  const t = dict[lang];
   return (
     <section id="projects" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32">
       <SectionHeader
         index="02"
-        label="projects"
-        title="Selected work."
-        description="Products for classrooms, disaster response, water service and local artists — all built in and for Catbalogan City."
+        label={t.sections.projects.label}
+        title={t.sections.projects.title}
+        description={t.sections.projects.description}
       />
 
       <div className="grid gap-6 md:grid-cols-6">
@@ -34,7 +38,7 @@ export function Projects() {
               >
                 {featured && <BorderBeam />}
                 <Link
-                  href={`/projects/${p.slug}`}
+                  href={localePath(lang, `/projects/${p.slug}`)}
                   data-cursor="View"
                   className={`relative block overflow-hidden border-border ${featured ? "aspect-[16/10] lg:aspect-auto lg:w-3/5 lg:border-r" : "aspect-[16/10] border-b"}`}
                 >
@@ -70,7 +74,7 @@ export function Projects() {
                     </ul>
                   )}
                   <p className="mt-4 font-mono text-xs text-muted">
-                    Role: <span className="text-fg">{p.role}</span>
+                    {t.projects.role}: <span className="text-fg">{p.role}</span>
                   </p>
                   <ul className="mt-4 flex flex-wrap gap-1.5">
                     {p.stack.map((s) => (
@@ -80,8 +84,8 @@ export function Projects() {
                     ))}
                   </ul>
                   <div className="mt-auto flex items-center gap-4 pt-6 text-sm">
-                    <Link href={`/projects/${p.slug}`} className="group/l inline-flex items-center gap-1.5 text-fg">
-                      Case study
+                    <Link href={localePath(lang, `/projects/${p.slug}`)} className="group/l inline-flex items-center gap-1.5 text-fg">
+                      {t.projects.caseStudy}
                       <ArrowRight className="size-4 transition group-hover/l:translate-x-0.5" />
                     </Link>
                     <a
@@ -90,7 +94,7 @@ export function Projects() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-muted transition hover:text-fg"
                     >
-                      Live site <ArrowUpRight className="size-4" />
+                      {t.projects.liveSite} <ArrowUpRight className="size-4" />
                     </a>
                   </div>
                 </div>

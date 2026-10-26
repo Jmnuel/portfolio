@@ -4,7 +4,8 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { ArrowDown, ArrowRight, MapPin, Sparkles } from "lucide-react";
 import { openChat } from "@/lib/chat";
-import { profile } from "@/lib/content";
+import { getContent } from "@/lib/localized";
+import { useLang } from "@/lib/useLang";
 import { introDelay } from "@/lib/intro";
 import { HyperText } from "@/components/ui/HyperText";
 import { Spotlight } from "@/components/ui/Spotlight";
@@ -20,6 +21,8 @@ const item = (delay: number) => ({
 });
 
 export function Hero() {
+  const { lang, t } = useLang();
+  const { profile } = getContent(lang);
   const section = useRef<HTMLElement>(null);
   // As the hero scrolls away, the copy lifts and fades while the 3D core drifts slower (parallax).
   const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end start"] });
@@ -50,7 +53,7 @@ export function Hero() {
           </motion.div>
 
           <motion.h1 {...item(0.2)} className="mt-6 font-semibold leading-[0.95] tracking-tighter">
-            <span className="block text-sm font-normal tracking-normal text-muted">Hi, I&apos;m</span>
+            <span className="block text-sm font-normal tracking-normal text-muted">{t.hero.hi}</span>
             <HyperText
               text={profile.name.toUpperCase()}
               delay={introDelay() * 1000}
@@ -77,7 +80,7 @@ export function Hero() {
                 href="#projects"
                 className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-fg transition hover:opacity-90"
               >
-                View projects
+                {t.hero.viewProjects}
                 <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
               </a>
             </Magnetic>
@@ -87,10 +90,10 @@ export function Hero() {
           </motion.div>
 
           <motion.p {...item(0.65)} className="mt-6 flex flex-wrap items-center gap-1.5 font-mono text-xs text-muted">
-            <MapPin className="size-3.5" /> {profile.location} · Press{" "}
-            <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">Ctrl/⌘ K</kbd> to navigate, or{" "}
+            <MapPin className="size-3.5" /> {profile.location} · {t.hero.press}{" "}
+            <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">Ctrl/⌘ K</kbd> {t.hero.toNavigate}{" "}
             <button type="button" onClick={() => openChat()} className="inline-flex items-center gap-1 text-fg underline decoration-border-strong underline-offset-4 transition hover:decoration-fg">
-              <Sparkles className="size-3" /> ask my AI assistant
+              <Sparkles className="size-3" /> {t.hero.askAssistant}
             </button>
           </motion.p>
         </motion.div>
@@ -98,13 +101,13 @@ export function Hero() {
 
       <motion.a
         href="#about"
-        aria-label="Scroll to about"
+        aria-label={t.hero.scroll}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 + introDelay() }}
         className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted"
       >
-        Scroll
+        {t.hero.scroll}
         <ArrowDown className="size-3.5 animate-bounce" />
       </motion.a>
     </section>

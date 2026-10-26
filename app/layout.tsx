@@ -8,6 +8,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { Intro } from "@/components/motion/Intro";
+import { LangSync } from "@/lib/useLang";
 import { Cursor } from "@/components/motion/Cursor";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { profile, siteUrl } from "@/lib/content";
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="noise min-h-dvh">
+        <LangSync />
         <Intro />
         <Cursor />
         <ScrollProgress />

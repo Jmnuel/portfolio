@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { profile } from "@/lib/content";
 import { closeChat, takePendingQuestion, useChatState } from "@/lib/chat";
+import { useLang } from "@/lib/useLang";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -42,19 +43,6 @@ function RichText({ text }: { text: string }) {
   });
 }
 
-const SUGGESTIONS = [
-  "What has Manuel built?",
-  "Tell me about KA-ANDAM",
-  "What's in Manuel's tech stack?",
-  "Is Manuel open to internships?",
-  "What did Manuel build at rSCENE?",
-];
-
-const ERRORS: Record<number, string> = {
-  429: "You've sent a lot of messages. Please wait a few minutes and try again.",
-  503: `The AI assistant isn't switched on yet. You can reach Manuel at ${profile.email}.`,
-};
-
 function Caret() {
   return <span aria-hidden className="ml-0.5 inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] animate-pulse bg-fg" />;
 }
@@ -64,6 +52,8 @@ function Kbd({ children }: { children: React.ReactNode }) {
 }
 
 export function ChatPanel() {
+  const { t } = useLang();
+  const c = t.chat;
   const { open, pending } = useChatState();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -72,7 +62,7 @@ export function ChatPanel() {
   const abort = useRef<AbortController | null>(null);
   const list = useRef<HTMLDivElement>(null);
   const field = useRef<HTMLTextAreaElement>(null);
-  const suggestion = SUGGESTIONS[hint % SUGGESTIONS.length];
+  const suggestion = c.suggestions[hint % c.suggestions.length];
 
   const send = useCallback(
     async (text: string) => {
@@ -101,7 +91,9 @@ export function ChatPanel() {
           signal: controller.signal,
         });
         if (!res.ok || !res.body) {
-          append(ERRORS[res.status] ?? "Sorry, something went wrong. Please try again.");
+          append(
+            res.status === 429 ? c.errors.rateLimited : res.status === 503 ? `${c.errors.notConfigured} ${profile.email}.` : c.errors.generic,
+          );
           return;
         }
         const reader = res.body.getReader();
@@ -112,14 +104,14 @@ export function ChatPanel() {
           append(decoder.decode(value, { stream: true }));
         }
       } catch (error) {
-        if ((error as Error).name !== "AbortError") append("Connection lost. Please try again.");
+        if ((error as Error).name !== "AbortError") append(c.errors.connection);
       } finally {
         setBusy(false);
         abort.current = null;
         requestAnimationFrame(() => field.current?.focus());
       }
     },
-    [busy, messages],
+    [busy, messages, c],
   );
 
   // A question handed over from the command menu or hero is sent as soon as the panel opens.
@@ -183,7 +175,7 @@ export function ChatPanel() {
           <div className="absolute right-4 top-4 z-10 flex items-center gap-2 font-mono text-xs text-muted sm:right-6 sm:top-6">
             {!empty && (
               <button type="button" onClick={reset} className="rounded-full px-3 py-1.5 transition hover:bg-surface-2 hover:text-fg">
-                new chat
+                {c.newChat}
               </button>
             )}
             <button
@@ -205,19 +197,19 @@ export function ChatPanel() {
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                   className="font-pixel text-4xl leading-tight text-fg sm:text-6xl"
                 >
-                  what do you want to ask?
+                  {c.prompt}
                 </motion.h2>
               ) : (
                 <div className="space-y-10">
                   {messages.map((m, i) =>
                     m.role === "user" ? (
                       <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-end text-right">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">you</span>
+                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">{c.you}</span>
                         <p className="mt-2 max-w-[85%] whitespace-pre-wrap break-words font-mono text-base text-muted sm:text-lg">{m.content}</p>
                       </motion.div>
                     ) : (
                       <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-start">
-                        <span className="font-pixel text-[11px] tracking-wider text-faint">manuel&apos;s ai</span>
+                        <span className="font-pixel text-[11px] tracking-wider text-faint">{c.ai}</span>
                         <div className="mt-2 max-w-[92%] whitespace-pre-wrap break-words text-base leading-relaxed text-fg/90 sm:text-lg">
                           {m.content && <RichText text={m.content} />}
                           {busy && i === messages.length - 1 && <Caret />}
@@ -251,31 +243,31 @@ export function ChatPanel() {
                   rows={1}
                   maxLength={800}
                   disabled={busy}
-                  placeholder={empty ? suggestion : "ask a follow-up…"}
+                  placeholder={empty ? suggestion : c.followUp}
                   aria-label="Your question"
                   className="w-full resize-none overflow-hidden bg-transparent font-mono text-lg text-fg caret-fg outline-none placeholder:text-faint disabled:opacity-50 sm:text-2xl"
                 />
                 <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11px] text-muted">
                   {busy ? (
                     <button type="button" onClick={() => abort.current?.abort()} className="flex items-center gap-1.5 hover:text-fg">
-                      <Kbd>stop</Kbd> answering
+                      <Kbd>{c.stop}</Kbd> {c.answering}
                     </button>
                   ) : (
                     <>
                       <span className="flex items-center gap-1.5">
-                        <Kbd>enter</Kbd> send
+                        <Kbd>enter</Kbd> {c.send}
                       </span>
                       {!input && (
                         <span className="hidden items-center gap-1.5 sm:flex">
-                          <Kbd>tab</Kbd> use suggestion
+                          <Kbd>tab</Kbd> {c.useSuggestion}
                         </span>
                       )}
                       <span className="hidden items-center gap-1.5 sm:flex">
-                        <Kbd>esc</Kbd> close
+                        <Kbd>esc</Kbd> {c.close}
                       </span>
                     </>
                   )}
-                  <span className="text-faint">· AI can make mistakes. Answers come from this site.</span>
+                  <span className="text-faint">{c.disclaimer}</span>
                 </div>
               </form>
             </div>
